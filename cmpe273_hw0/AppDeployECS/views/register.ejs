@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Form</title>
+</head>
+<body>
+    <h1>Create account</h1>
+    <form method = "post"> 
+        Your Name: <input type="text" placeholder="Your name" id="name" pattern="^([a-zA-Z]+\s)*[a-zA-Z]+$" required><br>
+        Email: <input type="email" placeholder="example@gmail.com" id="email" required><br>
+        Username: <input type="username" placeholder="Your username" maxlength="15" id="username" required><br>
+        Password: <input type="password" placeholder="At least 6 characters" minlength="6" maxlength="16" id="password" required><br>
+        <input type="submit" name="submit" onclick="register()"></button><br>
+        <p>Already have an account? <a href="/login">Sign in</a></p>
+    </form>
+<script>
+function register() {
+
+  var name = document.getElementById("name").value;
+  var email = document.getElementById("email").value;
+  var username = document.getElementById("username").value;
+  var password = document.getElementById("password").value;
+
+    if(typeof(Storage) !== "undefined") {
+        if(name != "" && email != "" && username != "" && password != "") {
+            localStorage.setItem('name', name);
+            alert("Hello " + localStorage.getItem('name') + ", Thank You for registering! Only your name is stored in localstorage.");
+        }
+    }
+
+}
+</script>
+
+</body>
+</html>
