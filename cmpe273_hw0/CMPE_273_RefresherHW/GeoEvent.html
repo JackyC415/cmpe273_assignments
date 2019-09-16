@@ -1,0 +1,158 @@
+<!--GRID LAYOUT REFERENCE:  https://www.w3schools.com/css/tryit.asp?filename=trycss_grid-->
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  background-color: #2196F3;
+  padding: 10px;
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<h1>Locate Restaurant</h1>
+
+<div class="grid-container">
+  <div class="grid-item">
+        <img src="pizzaHut.png" width="300" height="200">
+        <button onclick="getStoreLocation('pizzaHut')">Locate</button>
+  </div>
+  <div class="grid-item">
+        <img src="pizzaHut.png" width="300" height="200">
+        <button onclick="getStoreLocation('mcDonald')">Locate</button>
+  </div>
+  <div class="grid-item">
+        <img src="pizzaHut.png" width="300" height="200">
+        <button onclick="getStoreLocation('KFC')">Locate</button>
+  </div>
+</div>
+
+<h1>Purchase a Parking Permit</h1>
+Your Budget: <input type="number" placeholder="Your budget" id="budget" required>
+<button onclick="priceSuggest()">CheckPrice</button><br>
+Filter Price: <input type="number" placeholder="Price" id="filter" required>
+<button onclick="filterPrices()">Filter</button>
+
+<script>
+
+    var cityLongLat = [
+        ["PizzaHut", 10.3112, 203.41],
+        ["McDonald", 100.4563, 90.124],
+        ["KFC", 140.212, 60.121]
+    ];
+
+    if(navigator.geolocation) navigator.geolocation.getCurrentPosition(getUserLocation);
+
+    function getUserLocation(position) {
+        alert("Current Location: Lat " + position.coords.latitude + ", Long " + position.coords.longitude);
+        this.lat = position.coords.latitude;
+        this.long = position.coords.longitude;
+    }
+
+    function getStoreLocation(name) {
+
+        if(name === "pizzaHut") {
+            alert("Your current location from PizzaHut: Long: "+ Math.abs((this.long-cityLongLat[0][1])) + ", Lat: " + Math.abs((this.lat-cityLongLat[0][2])));
+        } else if (name === "mcDonald") {
+            alert("Your current location from McDonald: Long: "+ Math.abs((this.long-cityLongLat[1][1])) + ", Lat: " + Math.abs((this.lat-cityLongLat[1][2])));
+        } else {
+            alert("Your current location from KFC: Long: "+ Math.abs((this.long-cityLongLat[2][1])) + ", Lat: " + Math.abs((this.lat-cityLongLat[2][2])));
+        }
+    }
+
+    const priceSuggest = () => {
+
+    var budget = document.getElementById("budget").value;
+
+    //raw json data stored in server
+    var serverData = [
+    '{"type": "daily", "price": 8}',
+    '{"type": "weekly", "price": 40}',
+    '{"type": "monthly", "price": 80}',
+    '{"type": "semester", "price": 200}'
+    ];
+
+    document.write("Your Budget: $" + budget + "<br>");
+
+    //parse permit prices from json data
+    const permitPrices = [];
+    parsePermitPrices(serverData,permitPrices);
+
+    //convert objects to strings to list price range
+    const permitPriceRange = [];
+    getPermitPriceRange(permitPrices,permitPriceRange);
+
+    var positionOfBudget = permitPrices.findIndex(p => p.price === budget);
+    if(permitPriceRange.includes(budget.toString())) {
+    alert("BINGO! Price match for your budget: " + JSON.stringify(permitPrices.splice(positionOfBudget, 1))); 
+    }
+
+    displayOptions(permitPrices, positionOfBudget, budget);
+    }
+
+    //parse permits from the server objects
+    function parsePermitPrices(arr, arr1) {
+        //parse data from server (array)
+        for(var i = 0; i < arr.length; i++) {
+            arr1.push(JSON.parse(arr[i]));
+        }
+    }
+
+    //list price range of all permits
+    function getPermitPriceRange(arr, arr1) {
+    //ensure data are valid, convert them to string for processing
+        for(var i = 0; i < arr.length; i++) {
+            if(typeof arr[i] !== "undefined") {
+                arr1.push(JSON.stringify(arr[i].price));
+            }
+        }
+    document.write("Permit Price Range: " + arr1 + "<br>");
+    }
+
+    //display all suggested permits based on budget
+    function displayOptions(arr, pos, bud) {
+
+        if(bud <= 8) {
+            document.write("Sorry, our cheapest permit costs $8." + "<br>");
+        } else {
+        document.write("Please consider these option(s) (based on your budget): ");
+        for(var i = 0; i < arr.length; i++) {
+            if(arr[i].price < bud.toString()) {
+                pos = i;
+            }
+        }
+        document.write(JSON.stringify(arr.slice(0, pos+1)) + "<br>");
+        }
+    }
+
+    //filter all permit prices higher than input
+    function filterPrices() {
+        const priceRange = [8, 40, 80, 200];
+        var priceInput = document.getElementById("filter").value;
+        if(priceInput > 8) {
+            for(var i = 0; i < priceRange.length; i++) {
+            if(priceRange[i] > priceInput) {
+                priceRange.splice(i, priceRange.length);
+            }
+        }
+        document.write("These price(s) are available: " + priceRange);
+        } else {
+            document.write("Sorry, our cheapest permit costs $8." + "<br>");
+        }
+    }
+
+</script>
+</body>
+</html>
+

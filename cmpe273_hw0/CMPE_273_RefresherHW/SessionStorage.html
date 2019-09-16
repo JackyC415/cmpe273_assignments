@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login Form</title>
+</head>
+<body>
+	<h1>Sign in</h1>
+	<form method = "post">
+	Username: <input type="username" placeholder="Enter username" id="username" maxlength="15" required><br>
+	Password: <input type="password" placeholder="Enter password" id="password" minlength="6" maxlength="16" required><br>
+    <input type="submit" value="Login" onclick="login()"></button>
+    <input type="submit" value="OptOutSession" onclick="optOut()"></button><br>
+    <p>New? <a href="LocalStorage.html">Create account</a></p>
+    </form>
+    
+    <script>
+              
+            function login() {
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+
+                if(typeof(Storage) !== "undefined") {
+                    if(username != "" && password != "") {
+                        sessionStorage.setItem('username', username);
+                        sessionStorage.setItem('password', password);
+                        alert("Your username and password are saved in session storage for authorizaton purposes. To disable, please press OptOut button.");
+                    } else {
+                        alert("Not saved...");
+                    }
+                } else {
+                    alert("Browser does not support storage!");
+                }
+            }
+
+            function optOut() {
+
+                if(sessionStorage.getItem('username') && sessionStorage.getItem('password')) {
+                    sessionStorage.removeItem('username');
+                    sessionStorage.removeItem('password');
+                    alert("Opt Out!");
+                } else {
+                    alert("Session storage is empty!");
+                }
+            }
+    </script>
+</body>
+</html>
